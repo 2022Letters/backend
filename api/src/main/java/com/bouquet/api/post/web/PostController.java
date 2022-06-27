@@ -34,6 +34,13 @@ public class PostController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PutMapping ("/post/{postId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<PostResponse.OnlyId> update(@PathVariable Long postId, @RequestBody PostRequest.Create request) {
+        PostResponse.OnlyId response = postService.update(postId, request);
+        return ResponseEntity.created(URI.create("/api/post/" + response.getId())).body(response);
+    }
+
     @DeleteMapping("/post/{postId}")
     public ResponseEntity<PostResponse.OnlyId> delete(@PathVariable Long postId) {
         PostResponse.OnlyId response = postService.delete(postId);
