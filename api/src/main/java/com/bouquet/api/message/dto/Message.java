@@ -1,12 +1,15 @@
 package com.bouquet.api.message.dto;
 
 
+import com.bouquet.api.icon.dto.Icon;
+import com.bouquet.api.post.dto.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -19,12 +22,13 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "post_id")
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @Column(name = "post_id")
-    private Long postId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "icon_id")
+    private Icon icon;
 
     @Column(nullable = false)
     private String nickname;
@@ -38,13 +42,20 @@ public class Message {
     @Column
     private int y;
 
-    public static Message create(MessageRequest.Create request) {
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    public static Message create(MessageRequest.Create request, Post post) {
         return Message.builder()
-                .postId(request.getPostId())
+                .post(post)
                 .nickname(request.getNickname())
                 .content(request.getContent())
                 .x(request.getX())
                 .y(request.getY())
                 .build();
+    }
+
+    public void setIcon(Icon icon) {
+        this.icon = icon;
     }
 }
