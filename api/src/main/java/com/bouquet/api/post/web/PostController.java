@@ -28,16 +28,16 @@ public class PostController {
         return ResponseEntity.created(URI.create("/api/post/" + response.getId())).body(response);
     }
 
-    @GetMapping("/post/{id}")
-    public ResponseEntity<PostResponse.GetPost> getPost(@PathVariable Long id) {
-        PostResponse.GetPost response = postService.getPost(id);
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostResponse.GetPost> getPost(@PathVariable Long postId) {
+        PostResponse.GetPost response = postService.getPost(postId);
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping("/post/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        postService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/post/{postId}")
+    public ResponseEntity<PostResponse.OnlyId> delete(@PathVariable Long postId) {
+        PostResponse.OnlyId response = postService.delete(postId);
+        return ResponseEntity.ok().body(response);
     }
 
 }
