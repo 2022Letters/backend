@@ -29,8 +29,9 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable Long id) {
-        return new ResponseEntity<Post>(postService.getPost(id), HttpStatus.OK);
+    public ResponseEntity<PostResponse.GetPost> getPost(@PathVariable Long id) {
+        PostResponse.GetPost response = postService.getPost(id);
+        return ResponseEntity.ok().body(response);
     }
 
 }

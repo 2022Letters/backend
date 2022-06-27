@@ -26,8 +26,10 @@ public class PostService {
         return PostResponse.OnlyId.build(savedPost);
     }
 
-    public Post getPost(Long id) {
-        return postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+    public PostResponse.GetPost getPost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+
+        return PostResponse.GetPost.build(post);
     }
 
 }
