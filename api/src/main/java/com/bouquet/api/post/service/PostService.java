@@ -32,4 +32,8 @@ public class PostService {
         return PostResponse.GetPost.build(post);
     }
 
+    public void delete(Long id) {
+        postRepository.deleteById(id);
+    }
+
 }
