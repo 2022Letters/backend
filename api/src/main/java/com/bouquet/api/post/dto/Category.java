@@ -23,6 +23,6 @@ public class Category {
     @Column
     private String backgroundUrl;
     @Column
-    private String iconUrl;
+    private String iconId;
 
 }
