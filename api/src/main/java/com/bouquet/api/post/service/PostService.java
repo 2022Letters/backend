@@ -32,4 +32,12 @@ public class PostService {
         return PostResponse.GetPost.build(post);
     }
 
+    @Transactional
+    public PostResponse.OnlyId delete(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        // 유저 확인 필요
+        postRepository.deleteById(id);
+        return PostResponse.OnlyId.build(post);
+    }
+
 }
