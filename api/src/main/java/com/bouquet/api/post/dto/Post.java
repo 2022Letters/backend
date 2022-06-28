@@ -1,8 +1,9 @@
 package com.bouquet.api.post.dto;
-
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class Post {
     private Long id;
 
     @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    private int categoryId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -29,10 +30,11 @@ public class Post {
     private boolean visibility;
 
     @Column(nullable = false)
-    private String date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime date;
 
-    @Column(name = "created_at")
-    private String createdAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     public static Post create(PostRequest.Create request) {
         return Post.builder()
