@@ -17,13 +17,13 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
+    @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 100, nullable = false)
     private String nickname;
 
-    @Column(nullable = true)
+    @Column(length = 255, nullable = true)
     private String token;
 
     public User update(String nickname){

@@ -21,28 +21,11 @@ public class UserController {
 
     private final UserService userService;
 
-
-
-//    @GetMapping(value = "/user/nickname")
-//    public ResponseEntity<User> getUser(String nickname, HttpSession session){
-//        User user = (User) session.getAttribute("user");
-////        user.update(nickname);
-//        System.out.println(user);
-//        return new ResponseEntity<User>(user, HttpStatus.OK);
-//    }
-
     @GetMapping(value = "/user/nickname")
     public ResponseEntity<UserResponse.UserInfo> getUser(String nickname){
         UserResponse.UserInfo response = userService.create(nickname);
         return new ResponseEntity<UserResponse.UserInfo>(response, HttpStatus.OK);
     }
-
-//    @GetMapping(value = "/sucess")
-//    public ResponseEntity<User> loginComplete(HttpSession session) {
-//
-//        User user = (User) session.getAttribute("user");
-//        return new ResponseEntity<User>(user, HttpStatus.OK);
-//    }
 
     @GetMapping(value = "/sucess")
     public ResponseEntity<Map<String, Object>> loginComplete(HttpSession session) {
