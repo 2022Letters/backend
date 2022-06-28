@@ -22,4 +22,9 @@ public class MessageController {
         MessageResponse.OnlyId response = messageService.create(request);
         return ResponseEntity.created(URI.create("/api/msg/" + response.getId())).body(response);
     }
+    @GetMapping("/msg/{msgId}")
+    public ResponseEntity<MessageResponse.GetMessage> getMessage(@PathVariable Long msgId) {
+        MessageResponse.GetMessage response = messageService.getMessage(msgId);
+        return ResponseEntity.ok().body(response);
+    }
 }

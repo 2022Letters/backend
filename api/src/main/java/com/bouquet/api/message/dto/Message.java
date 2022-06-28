@@ -45,17 +45,14 @@ public class Message {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Message create(MessageRequest.Create request, Post post) {
+    public static Message create(MessageRequest.Create request, Post post, Icon icon) {
         return Message.builder()
                 .post(post)
+                .icon(icon)
                 .nickname(request.getNickname())
                 .content(request.getContent())
                 .x(request.getX())
                 .y(request.getY())
                 .build();
-    }
-
-    public void setIcon(Icon icon) {
-        this.icon = icon;
     }
 }
