@@ -1,6 +1,12 @@
 package com.bouquet.api.post.dto;
 
+import com.bouquet.api.message.dto.Message;
+import com.bouquet.api.message.dto.MessageResponse;
 import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostResponse {
 
@@ -23,13 +29,15 @@ public class PostResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class GetPost {
         private Long id;
-        private Long categoryId;
+        private int categoryId;
         private Long userId;
         private String title;
         private boolean visibility;
-        private String date;
-        private String createdAt;
-        public static PostResponse.GetPost build(Post post) {
+        private LocalDateTime date;
+        private LocalDateTime createdAt;
+        private int count;
+        private List<MessageResponse.GetMessageInfo> messages;
+        public static PostResponse.GetPost build(Post post, int count, List<Message> messages) {
             return GetPost.builder()
                     .id(post.getId())
                     .categoryId(post.getCategoryId())
@@ -38,8 +46,46 @@ public class PostResponse {
                     .visibility(post.isVisibility())
                     .date(post.getDate())
                     .createdAt(post.getCreatedAt())
+                    .count(count)
+                    .messages(messages.stream().map(MessageResponse.GetMessageInfo::build).collect(Collectors.toList()))
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetPostInfo {
+        private Long id;
+        private String title;
+        private LocalDateTime date;
+        private int categoryId;
+
+        public static PostResponse.GetPostInfo build(Post post) {
+            return GetPostInfo.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .date(post.getDate())
+                    .categoryId(post.getCategoryId())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetPosts {
+        private List<GetPostInfo> posts;
+
+        public static PostResponse.GetPosts build(List<Post> posts) {
+            return PostResponse.GetPosts.builder()
+                    .posts(posts.stream().map(PostResponse.GetPostInfo::build).collect(Collectors.toList()))
+                    .build();
+        }
+    }
+
+
 
 }
