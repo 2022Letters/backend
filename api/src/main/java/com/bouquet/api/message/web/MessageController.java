@@ -27,4 +27,9 @@ public class MessageController {
         MessageResponse.GetMessage response = messageService.getMessage(msgId);
         return ResponseEntity.ok().body(response);
     }
+    @DeleteMapping("/msg/{msgId}")
+    public ResponseEntity<MessageResponse.OnlyId> delete(@PathVariable Long msgId) {
+        MessageResponse.OnlyId response = messageService.delete(msgId);
+        return ResponseEntity.ok().body(response);
+    }
 }

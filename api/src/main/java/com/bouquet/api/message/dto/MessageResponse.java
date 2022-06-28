@@ -31,7 +31,6 @@ public class MessageResponse {
         private String content;
         private int x;
         private int y;
-        private LocalDateTime createdAt;
 
         public static MessageResponse.GetMessage build(Message message) {
             return GetMessage.builder()
@@ -42,7 +41,6 @@ public class MessageResponse {
                     .content(message.getContent())
                     .x(message.getX())
                     .y(message.getY())
-                    .createdAt(message.getCreatedAt())
                     .build();
         }
     }
