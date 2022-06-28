@@ -2,6 +2,8 @@ package com.bouquet.api.message.dto;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MessageResponse {
     @Getter
@@ -41,6 +43,41 @@ public class MessageResponse {
                     .x(message.getX())
                     .y(message.getY())
                     .createdAt(message.getCreatedAt())
+                    .build();
+        }
+    }
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetMessageInfo {
+        private Long id;
+        private String iconUrl;
+        private int x;
+        private int y;
+        public static MessageResponse.GetMessageInfo build(Message message) {
+            return GetMessageInfo.builder()
+                    .id(message.getId())
+                    .iconUrl(message.getIcon().getIconUrl())
+                    .x(message.getX())
+                    .y(message.getY())
+                    .build();
+        }
+    }
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetMessages {
+        // TODO: 아래 두 줄 GetPost에 추가
+        private int count;
+        private List<GetMessageInfo> messages;
+
+        public static MessageResponse.GetMessages build(int count, List<Message> messages) {
+            // TODO: 아래 두 줄 GetPost에 추가
+            return GetMessages.builder()
+                    .count(count)
+                    .messages(messages.stream().map(MessageResponse.GetMessageInfo::build).collect(Collectors.toList()))
                     .build();
         }
     }

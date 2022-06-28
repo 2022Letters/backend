@@ -14,6 +14,8 @@ import com.bouquet.api.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -31,5 +33,12 @@ public class MessageService {
     public MessageResponse.GetMessage getMessage(Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
         return MessageResponse.GetMessage.build(message);
+    }
+    public MessageResponse.GetMessages getMessages(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        // TODO: 아래 두 줄 GetPost에 추가
+        int count = messageRepository.countAllByPost(post);
+        List<Message> messages = messageRepository.findAllByPost(post);
+        return MessageResponse.GetMessages.build(count, messages);
     }
 }
