@@ -27,4 +27,10 @@ public class MessageController {
         MessageResponse.GetMessage response = messageService.getMessage(msgId);
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/msgs/post/{postId}")
+    public ResponseEntity<MessageResponse.GetMessages> getMessages(@PathVariable Long postId) {
+        MessageResponse.GetMessages response = messageService.getMessages(postId);
+        return ResponseEntity.ok().body(response);
+    }
 }

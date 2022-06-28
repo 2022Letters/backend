@@ -12,6 +12,4 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Integer countAllByPost(Post post);
     // 메세지 목록 출력
     List<Message> findAllByPost(Post post);
-    // 메시지 상세 보기
-    Optional<Message> findByPost(Post post);
 }
