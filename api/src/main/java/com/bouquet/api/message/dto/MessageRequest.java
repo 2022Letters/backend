@@ -9,6 +9,7 @@ public class MessageRequest {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Create {
         private Long postId;
+        private Long iconId;
         private String nickname;
         private String content;
         private int x;
