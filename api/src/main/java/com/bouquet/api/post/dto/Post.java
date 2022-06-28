@@ -1,7 +1,8 @@
 package com.bouquet.api.post.dto;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
+import com.bouquet.api.user.dto.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -20,8 +21,9 @@ public class Post {
     @Column(name = "category_id", nullable = false)
     private int categoryId;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column
     private String title;
@@ -36,10 +38,10 @@ public class Post {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Post create(PostRequest.Create request) {
+    public static Post create(PostRequest.Create request, User user) {
         return Post.builder()
                 .categoryId(request.getCategoryId())
-                .userId(request.getUserId())
+                .user(user)
                 .title(request.getTitle())
                 .visibility(request.isVisibility())
                 .date(request.getDate())

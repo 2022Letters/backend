@@ -1,5 +1,6 @@
 package com.bouquet.api.post.service;
 
+import com.bouquet.api.user.dto.User;
 import com.bouquet.api.message.dto.Message;
 import com.bouquet.api.message.repository.MessageRepository;
 import com.bouquet.api.post.dto.Post;
@@ -7,6 +8,7 @@ import com.bouquet.api.post.dto.PostRequest;
 import com.bouquet.api.post.dto.PostResponse;
 import com.bouquet.api.post.exception.PostNotFoundException;
 import com.bouquet.api.post.repository.PostRepository;
+import com.bouquet.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +21,14 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
     @Transactional
     public PostResponse.OnlyId create(PostRequest.Create request) {
-        Post post = Post.create(request);
+        // TODO: UserNotFoundException 만들고 여기 예외 이름 수정
+        User user = userRepository.findById(request.getUserId()).orElseThrow(PostNotFoundException::new);
+        Post post = Post.create(request, user);
         Post savedPost = postRepository.save(post);
         return PostResponse.OnlyId.build(savedPost);
     }
