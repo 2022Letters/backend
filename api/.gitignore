@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### google client ###
+**/src/main/resources/application-oauth.properties
+
