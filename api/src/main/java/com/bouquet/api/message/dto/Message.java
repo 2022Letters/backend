@@ -1,7 +1,5 @@
 package com.bouquet.api.message.dto;
 
-
-import com.bouquet.api.icon.dto.Icon;
 import com.bouquet.api.post.dto.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,9 +24,8 @@ public class Message {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "icon_id")
-    private Icon icon;
+    @Column(name = "icon_id")
+    private int iconId;
 
     @Column(nullable = false)
     private String nickname;
@@ -45,10 +42,10 @@ public class Message {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Message create(MessageRequest.Create request, Post post, Icon icon) {
+    public static Message create(MessageRequest.Create request, Post post) {
         return Message.builder()
                 .post(post)
-                .icon(icon)
+                .iconId(request.getIconId())
                 .nickname(request.getNickname())
                 .content(request.getContent())
                 .x(request.getX())

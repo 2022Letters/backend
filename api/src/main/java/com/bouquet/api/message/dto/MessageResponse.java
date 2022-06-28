@@ -26,7 +26,7 @@ public class MessageResponse {
     public static class GetMessage {
         private Long id;
         private Long postId;
-        private String iconUrl;
+        private int iconId;
         private String nickname;
         private String content;
         private int x;
@@ -37,7 +37,7 @@ public class MessageResponse {
             return GetMessage.builder()
                     .id(message.getId())
                     .postId(message.getPost().getId())
-                    .iconUrl(message.getIcon().getIconUrl())
+                    .iconId(message.getIconId())
                     .nickname(message.getNickname())
                     .content(message.getContent())
                     .x(message.getX())
@@ -52,32 +52,15 @@ public class MessageResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class GetMessageInfo {
         private Long id;
-        private String iconUrl;
+        private int iconId;
         private int x;
         private int y;
         public static MessageResponse.GetMessageInfo build(Message message) {
             return GetMessageInfo.builder()
                     .id(message.getId())
-                    .iconUrl(message.getIcon().getIconUrl())
+                    .iconId(message.getIconId())
                     .x(message.getX())
                     .y(message.getY())
-                    .build();
-        }
-    }
-    @Getter
-    @Builder
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class GetMessages {
-        // TODO: 아래 두 줄 GetPost에 추가
-        private int count;
-        private List<GetMessageInfo> messages;
-
-        public static MessageResponse.GetMessages build(int count, List<Message> messages) {
-            // TODO: 아래 두 줄 GetPost에 추가
-            return GetMessages.builder()
-                    .count(count)
-                    .messages(messages.stream().map(MessageResponse.GetMessageInfo::build).collect(Collectors.toList()))
                     .build();
         }
     }
