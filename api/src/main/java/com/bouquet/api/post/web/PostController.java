@@ -22,15 +22,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/requestParameter")
-    public String requestParameter(
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-            @RequestParam("requestDateTime") LocalDateTime requestDateTime) {
-        System.out.println(requestDateTime);
-
-        return "requestParameter 성공";
-    }
-
     @PostMapping("/post")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<PostResponse.OnlyId> create(@RequestBody PostRequest.Create request) {

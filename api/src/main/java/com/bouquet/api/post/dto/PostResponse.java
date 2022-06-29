@@ -31,6 +31,7 @@ public class PostResponse {
         private Long id;
         private int categoryId;
         private Long userId;
+        private String userNickname;
         private String title;
         private boolean visibility;
         private LocalDateTime date;
@@ -41,7 +42,8 @@ public class PostResponse {
             return GetPost.builder()
                     .id(post.getId())
                     .categoryId(post.getCategoryId())
-                    .userId(post.getUserId())
+                    .userId(post.getUser().getId())
+                    .userNickname(post.getUser().getNickname())
                     .title(post.getTitle())
                     .visibility(post.isVisibility())
                     .date(post.getDate())
@@ -61,6 +63,7 @@ public class PostResponse {
         private String title;
         private LocalDateTime date;
         private int categoryId;
+        private String userNickname;
 
         public static PostResponse.GetPostInfo build(Post post) {
             return GetPostInfo.builder()
@@ -68,6 +71,7 @@ public class PostResponse {
                     .title(post.getTitle())
                     .date(post.getDate())
                     .categoryId(post.getCategoryId())
+                    .userNickname(post.getUser().getNickname())
                     .build();
         }
     }
