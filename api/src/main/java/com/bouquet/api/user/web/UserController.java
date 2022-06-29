@@ -9,11 +9,13 @@ import com.bouquet.api.user.repository.UserRepository;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
 import com.bouquet.api.util.JWTUtil;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -36,8 +38,9 @@ public class UserController {
     private UserRepository userRepository;
 
     //프론트에서 인증 코드를 보내주면 카카오 서버와 통신하고 사용자 정보를 조회한다.
-    @RequestMapping("kakaoLogin")
-    public ResponseEntity<Object> kakaoLogin(String code, HttpSession httpSession) {
+    @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환")
+    @GetMapping("kakaoLogin")
+    public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
         System.out.print(code);
         HttpStatus status = null;
         try {
@@ -76,14 +79,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-
-//    @GetMapping(value = "/login/user/nickname")
-//    public ResponseEntity<UserResponse.UserInfo> getUser(String nickname){
-//        UserResponse.UserInfo response = userService.create(nickname);
-//        return new ResponseEntity<UserResponse.UserInfo>(response, HttpStatus.OK);
-//    }
-
-
+    @ApiOperation(value = "닉네임 입력", notes = "nickname 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
     @GetMapping(value = "/login/user/nickname")
     public ResponseEntity<Map<String, Object>> getUser(String nickname){
         HttpStatus status = null;
@@ -93,7 +89,7 @@ public class UserController {
         else status = status = HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
-
+    @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환 ")
     @GetMapping(value = "/login/sucess")
     public ResponseEntity<Map<String, Object>> loginComplete() {
         HttpStatus status = null;
@@ -105,7 +101,7 @@ public class UserController {
         else status = HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
-
+    @ApiOperation(value = "회원 탈퇴", notes = "userId 값을 입력받아 회원 탈퇴")
     @DeleteMapping(value = "/user/{userId}")
     public ResponseEntity<UserResponse.OnlyId> delete(@PathVariable Long userId) {
         UserResponse.OnlyId response = userService.delete(userId);
