@@ -5,7 +5,7 @@ import com.bouquet.api.message.dto.MessageResponse;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +17,7 @@ public class PostResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class OnlyId {
         private long id;
+
         public static PostResponse.OnlyId build(Post post) {
             return PostResponse.OnlyId.builder()
                     .id(post.getId())
@@ -35,10 +36,11 @@ public class PostResponse {
         private String userNickname;
         private String title;
         private boolean visibility;
-        private LocalDateTime date;
+        private LocalDate date;
         private Timestamp createdAt;
         private int count;
         private List<MessageResponse.GetMessageInfo> messages;
+
         public static PostResponse.GetPost build(Post post, int count, List<Message> messages) {
             return GetPost.builder()
                     .id(post.getId())
@@ -62,7 +64,7 @@ public class PostResponse {
     public static class GetPostInfo {
         private Long id;
         private String title;
-        private LocalDateTime date;
+        private LocalDate date;
         private int categoryId;
         private String userNickname;
 
@@ -90,7 +92,6 @@ public class PostResponse {
                     .build();
         }
     }
-
 
 
 }
