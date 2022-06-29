@@ -8,13 +8,12 @@ import com.bouquet.api.user.dto.UserResponse;
 import com.bouquet.api.user.repository.UserRepository;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
+import com.bouquet.api.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -23,8 +22,15 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+
+    @Autowired
+    private JWTUtil jwtUtil;
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
     @Autowired
     private KakaoAuthService kakaoAuthService;
+
+    private final UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -33,6 +39,7 @@ public class UserController {
     @RequestMapping("kakaoLogin")
     public ResponseEntity<Object> kakaoLogin(String code, HttpSession httpSession) {
         System.out.print(code);
+        HttpStatus status = null;
         try {
             KakaoTokenInfo kakaoTokenInfo = kakaoAuthService.sendCode(code);
             KakaoUserInfo kakaoUserInfo = kakaoAuthService.sendToken(kakaoTokenInfo.getAccessToken());
@@ -42,9 +49,18 @@ public class UserController {
             HashMap<String, Object> hashMap = new HashMap<>();
             //이미 가입했으면
             if (userInfo != null) {
-                hashMap.put("user", userInfo);
+                UserResponse.UserInfo response = UserResponse.UserInfo.build(userInfo);
+                hashMap.put("user", response);
                 hashMap.put("existingUser", "true");
-                return ResponseEntity.status(HttpStatus.OK).body(hashMap);
+                try{
+                    hashMap.put("access-token", jwtUtil.createToken("email", userInfo.getEmail()));
+                    hashMap.put("message", SUCCESS );
+                    status = HttpStatus.ACCEPTED;
+                }catch(Exception e){
+                    hashMap.put("message", FAIL);
+                    status = HttpStatus.INTERNAL_SERVER_ERROR;
+                }
+                return ResponseEntity.status(status).body(hashMap);
             }
             //가입 안했으면
             else {
@@ -60,18 +76,40 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    private final UserService userService;
+
+//    @GetMapping(value = "/login/user/nickname")
+//    public ResponseEntity<UserResponse.UserInfo> getUser(String nickname){
+//        UserResponse.UserInfo response = userService.create(nickname);
+//        return new ResponseEntity<UserResponse.UserInfo>(response, HttpStatus.OK);
+//    }
+
 
     @GetMapping(value = "/login/user/nickname")
-    public ResponseEntity<UserResponse.UserInfo> getUser(String nickname){
-        UserResponse.UserInfo response = userService.create(nickname);
-        return new ResponseEntity<UserResponse.UserInfo>(response, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> getUser(String nickname){
+        HttpStatus status = null;
+        HashMap<String, Object> result = userService.create(nickname);
+        if(result.get("message").equals("success"))
+            status = HttpStatus.ACCEPTED;
+        else status = status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity<Map<String, Object>>(result, status);
     }
 
     @GetMapping(value = "/login/sucess")
-    public ResponseEntity<Map<String, Object>> loginComplete(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> loginComplete() {
+        HttpStatus status = null;
         HashMap<String, Object> result = userService.checknick();
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        if(result.get("existingUser").equals("false"))
+            status = HttpStatus.ACCEPTED;
+        else if(result.get("existingUser").equals("true") && result.get("message").equals("success"))
+            status = HttpStatus.ACCEPTED;
+        else status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity<Map<String, Object>>(result, status);
+    }
+
+    @DeleteMapping(value = "/user/{userId}")
+    public ResponseEntity<UserResponse.OnlyId> delete(@PathVariable Long userId) {
+        UserResponse.OnlyId response = userService.delete(userId);
+        return ResponseEntity.ok().body(response);
     }
 
 }
