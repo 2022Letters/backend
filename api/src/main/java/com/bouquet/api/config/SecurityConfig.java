@@ -24,7 +24,7 @@ public class SecurityConfig extends org.springframework.security.config.annotati
                 .authorizeRequests() //
                 .antMatchers("/", "/css/**", "/images/**",
                         "/js/**", "/h2-console/**").permitAll()
-                .anyRequest().authenticated() //
+                //.anyRequest().authenticated() //
 
                 .and()
                 .logout()

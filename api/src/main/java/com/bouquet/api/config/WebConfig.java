@@ -19,8 +19,8 @@
 //
 //    @Override
 //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/swagger-ui/**")
-//                .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
+//        registry.addResourceHandler("/img/**").addResourceLocations("classpath:/static/img/");
+//        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
 //    }
 //
 //    @Autowired
@@ -29,8 +29,7 @@
 //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
 //        registry.addInterceptor(jwtInterceptor)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/api/login");
+//                .addPathPatterns("/api/msg");
 //
 //    }
 //

@@ -23,8 +23,7 @@ public class User{
     @Column(length = 100, nullable = false)
     private String nickname;
 
-    @Column(length = 255, nullable = true)
-    private String token;
+
 
     public User update(String nickname){
         this.nickname = nickname;
