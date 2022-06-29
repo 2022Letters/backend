@@ -1,6 +1,8 @@
 package com.bouquet.api.user.web;
 
 
+import com.bouquet.api.post.dto.PostResponse;
+import com.bouquet.api.post.service.PostService;
 import com.bouquet.api.user.dto.KakaoTokenInfo;
 import com.bouquet.api.user.dto.KakaoUserInfo;
 import com.bouquet.api.user.dto.User;
@@ -12,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -28,6 +28,8 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    private final UserService userService;
 
     //프론트에서 인증 코드를 보내주면 카카오 서버와 통신하고 사용자 정보를 조회한다.
     @RequestMapping("kakaoLogin")
@@ -60,8 +62,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    private final UserService userService;
-
     @GetMapping(value = "/login/user/nickname")
     public ResponseEntity<UserResponse.UserInfo> getUser(String nickname){
         UserResponse.UserInfo response = userService.create(nickname);
@@ -73,5 +73,12 @@ public class UserController {
         HashMap<String, Object> result = userService.checknick();
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/user/{userId}")
+    public ResponseEntity<UserResponse.OnlyId> delete(@PathVariable Long userId) {
+        UserResponse.OnlyId response = userService.delete(userId);
+        return ResponseEntity.ok().body(response);
+    }
+
 
 }
