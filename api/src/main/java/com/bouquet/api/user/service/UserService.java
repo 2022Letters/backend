@@ -28,10 +28,9 @@ public class UserService {
         HashMap<String, Object> result = new HashMap<>();
         User user = (User) httpSession.getAttribute("user");
         if(user.getNickname() == null){
-            result.put("existingEmail", "false");
-//            result.put("email", user.getEmail());
+            result.put("existingUser", "false");
         }else{
-            result.put("existingEmail", "true");
+            result.put("existingUser", "true");
             result.put("user", user);
             // 토큰도 같이 보내야 함
         }
