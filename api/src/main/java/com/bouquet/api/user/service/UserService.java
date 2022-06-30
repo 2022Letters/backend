@@ -26,15 +26,15 @@ public class UserService {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
-    public HashMap<String, Object> create(String nickname){
+    public HashMap<String, Object> create(User user){
         HashMap<String, Object> result = new HashMap<>();
-        User user = (User) httpSession.getAttribute("user");
-        user.setNickname(nickname);
+//        User user = (User) httpSession.getAttribute("user");
+        System.out.println(user+"닉네임 입력 시 넘어온 유저 정보");
         User savedUser = userRepository.save(user);
         UserResponse.UserInfo response = UserResponse.UserInfo.build(savedUser);
         result.put("user", response);
         try{
-            result.put("access-token", jwtUtil.createToken("email", user.getEmail()));
+            result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
             result.put("message", SUCCESS );
         }catch(Exception e){
             result.put("message", FAIL);
@@ -42,9 +42,8 @@ public class UserService {
         return result;
     }
 
-    public HashMap<String, Object> checknick(){
+    public HashMap<String, Object> checknick(User user){
         HashMap<String, Object> result = new HashMap<>();
-        User user = (User) httpSession.getAttribute("user");
         if(user.getNickname() == null){
             result.put("existingUser", "false");
         }else{
@@ -52,7 +51,7 @@ public class UserService {
             result.put("existingUser", "true");
             result.put("user", response);
             try{
-                result.put("access-token", jwtUtil.createToken("email", user.getEmail()));
+                result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
                 result.put("message", SUCCESS );
             }catch(Exception e){
                 result.put("message", FAIL);

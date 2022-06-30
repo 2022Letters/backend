@@ -32,7 +32,7 @@ public class SecurityConfig extends org.springframework.security.config.annotati
 
                 .and()
                 .oauth2Login()
-                .defaultSuccessUrl("/login/sucess")
+                .defaultSuccessUrl("/login/email")
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService); //
     }

@@ -1,11 +1,9 @@
 package com.bouquet.api.user.web;
 
 
-import com.bouquet.api.user.dto.KakaoTokenInfo;
-import com.bouquet.api.user.dto.KakaoUserInfo;
-import com.bouquet.api.user.dto.User;
-import com.bouquet.api.user.dto.UserResponse;
+import com.bouquet.api.user.dto.*;
 import com.bouquet.api.user.repository.UserRepository;
+import com.bouquet.api.user.service.CustomOAuth2UserService;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
 import com.bouquet.api.util.JWTUtil;
@@ -17,18 +15,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
     @Autowired
     private JWTUtil jwtUtil;
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
+
     @Autowired
     private KakaoAuthService kakaoAuthService;
 
@@ -41,7 +41,7 @@ public class UserController {
     @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환")
     @GetMapping("kakaoLogin")
     public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
-        System.out.print(code);
+        System.out.println(code);
         HttpStatus status = null;
         try {
             KakaoTokenInfo kakaoTokenInfo = kakaoAuthService.sendCode(code);
@@ -54,9 +54,10 @@ public class UserController {
             if (userInfo != null) {
                 UserResponse.UserInfo response = UserResponse.UserInfo.build(userInfo);
                 hashMap.put("user", response);
+                hashMap.put("socialLoginType", 1);
                 hashMap.put("existingUser", "true");
                 try{
-                    hashMap.put("access-token", jwtUtil.createToken("email", userInfo.getEmail()));
+                    hashMap.put("accessToken", jwtUtil.createToken("email", userInfo.getEmail()));
                     hashMap.put("message", SUCCESS );
                     status = HttpStatus.ACCEPTED;
                 }catch(Exception e){
@@ -71,6 +72,8 @@ public class UserController {
                 user.setEmail(kakaoUserInfo.getEmail());
                 httpSession.setAttribute("user", user);
                 hashMap.put("existingUser", "false");
+                hashMap.put("socialLoginType", 1);
+                hashMap.put("email", user.getEmail());
                 return ResponseEntity.status(HttpStatus.OK).body(hashMap);
             }
         } catch (Exception e) {
@@ -79,33 +82,57 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+
     @ApiOperation(value = "닉네임 입력", notes = "nickname 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
-    @GetMapping(value = "/login/user/nickname")
-    public ResponseEntity<Map<String, Object>> getUser(String nickname){
+    @PostMapping(value = "/login/user/nickname")
+    public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user){
         HttpStatus status = null;
-        HashMap<String, Object> result = userService.create(nickname);
+        HashMap<String, Object> result = userService.create(user);
         if(result.get("message").equals("success"))
             status = HttpStatus.ACCEPTED;
         else status = status = HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
+
     @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환 ")
     @GetMapping(value = "/login/sucess")
-    public ResponseEntity<Map<String, Object>> loginComplete() {
+    public ResponseEntity<Map<String, Object>> loginComplete(HttpSession httpSession, String email) {
+//
         HttpStatus status = null;
-        HashMap<String, Object> result = userService.checknick();
-        if(result.get("existingUser").equals("false"))
+        User user = new User();
+        if(userRepository.existsByEmail(email) != null){
+            user = userRepository.existsByEmail(email);
+        }else{
+            user.setEmail(email);
+        }
+        System.out.println(email+"이메일");
+        System.out.println(user+"찾은유저정보");
+        httpSession.setAttribute("user", user);
+        HashMap<String, Object> result = userService.checknick(user);
+        if(result.get("existingUser").equals("false")){
+            result.put("email",email);
+            status = HttpStatus.ACCEPTED;}
+        else if(result.get("existingUser").equals("true") && result.get("message").equals("success")){
             status = HttpStatus.ACCEPTED;
-        else if(result.get("existingUser").equals("true") && result.get("message").equals("success"))
-            status = HttpStatus.ACCEPTED;
+        }
         else status = HttpStatus.INTERNAL_SERVER_ERROR;
+        result.put("socialLoginType", 0);
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
+
     @ApiOperation(value = "회원 탈퇴", notes = "userId 값을 입력받아 회원 탈퇴")
     @DeleteMapping(value = "/user/{userId}")
     public ResponseEntity<UserResponse.OnlyId> delete(@PathVariable Long userId) {
         UserResponse.OnlyId response = userService.delete(userId);
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping(value = "/login/email") // 구글 로그인 시 프론트로 이메일 넘겨줌 , 리다이렉트 url 함수
+    public void oauthLogin(HttpServletResponse response, HttpSession httpSession) throws IOException {
+        User user = (User)httpSession.getAttribute("user");
+        String redirect_uri="http://localhost:3000/login/redirect";
+        response.sendRedirect(redirect_uri+"?email="+user.getEmail());
+    }
+
 
 }
