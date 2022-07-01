@@ -11,7 +11,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "User")
-public class User{
+@ToString
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +24,10 @@ public class User{
     @Column(length = 100, nullable = false)
     private String nickname;
 
+    @Column(length = 255)
+    private String refreshToken;
 
-
-    public User update(String nickname){
+    public User update(String nickname) {
         this.nickname = nickname;
         return this;
     }
@@ -34,6 +36,7 @@ public class User{
         return User.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
+                .refreshToken(user.getRefreshToken())
                 .build();
     }
 
