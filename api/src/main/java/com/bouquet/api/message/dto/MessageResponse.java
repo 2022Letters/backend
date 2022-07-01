@@ -3,9 +3,6 @@ package com.bouquet.api.message.dto;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MessageResponse {
     @Getter
@@ -31,8 +28,8 @@ public class MessageResponse {
         private int iconId;
         private String nickname;
         private String content;
-        private int x;
-        private int y;
+        private Double x;
+        private Double y;
         private Timestamp createdAt;
 
         public static MessageResponse.GetMessage build(Message message) {
@@ -54,12 +51,14 @@ public class MessageResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class GetMessageInfo {
         private Long msgId;
+        private String nickname;
         private int iconId;
-        private int x;
-        private int y;
+        private Double x;
+        private Double y;
         public static MessageResponse.GetMessageInfo build(Message message) {
             return GetMessageInfo.builder()
                     .msgId(message.getId())
+                    .nickname(message.getNickname())
                     .iconId(message.getIconId())
                     .x(message.getX())
                     .y(message.getY())
