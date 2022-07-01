@@ -26,34 +26,34 @@ public class UserService {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
-    public HashMap<String, Object> create(User user){
+    public HashMap<String, Object> create(User user) {
         HashMap<String, Object> result = new HashMap<>();
-//        User user = (User) httpSession.getAttribute("user");
-        System.out.println(user+"닉네임 입력 시 넘어온 유저 정보");
+        User sessionUser = (User) httpSession.getAttribute("user");
+        user.setRefreshToken(sessionUser.getRefreshToken());
         User savedUser = userRepository.save(user);
         UserResponse.UserInfo response = UserResponse.UserInfo.build(savedUser);
         result.put("user", response);
-        try{
+        try {
             result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
-            result.put("message", SUCCESS );
-        }catch(Exception e){
+            result.put("message", SUCCESS);
+        } catch (Exception e) {
             result.put("message", FAIL);
         }
         return result;
     }
 
-    public HashMap<String, Object> checknick(User user){
+    public HashMap<String, Object> checknick(User user) {
         HashMap<String, Object> result = new HashMap<>();
-        if(user.getNickname() == null){
+        if (user.getNickname() == null) {
             result.put("existingUser", "false");
-        }else{
+        } else {
             UserResponse.UserInfo response = UserResponse.UserInfo.build(user);
             result.put("existingUser", "true");
             result.put("user", response);
-            try{
+            try {
                 result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
-                result.put("message", SUCCESS );
-            }catch(Exception e){
+                result.put("message", SUCCESS);
+            } catch (Exception e) {
                 result.put("message", FAIL);
             }
         }
@@ -65,7 +65,6 @@ public class UserService {
         userRepository.deleteById(id);
         return UserResponse.OnlyId.build(user);
     }
-
 
 
 }

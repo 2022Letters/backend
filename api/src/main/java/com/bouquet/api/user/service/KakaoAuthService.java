@@ -15,4 +15,10 @@ public interface KakaoAuthService {
 
     //사용자 이메일이 DB에 존재하는지 조회해서 회원가입 여부 판단. 존재하면 유저 정보, 존재하지 않으면 null 반환
     User emailCheck(String email);
+
+    //유저 아이디를 받아 토큰을 갱신하고 액세스 토큰 반환
+    String refreshToken(Long userId) throws Exception;
+
+    //액세스 토큰으로 카카오 로그아웃
+    void kakaoUnlink(String accessToken) throws Exception;
 }
