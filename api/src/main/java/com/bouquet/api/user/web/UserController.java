@@ -123,22 +123,25 @@ public class UserController {
 
     @ApiOperation(value = "회원 탈퇴", notes = "userId 값을 입력받아 회원 탈퇴")
     @DeleteMapping(value = "/user/{userId}")
-    public ResponseEntity<UserResponse.OnlyId> delete(@PathVariable Long userId, int socialLoginType) {
+    public ResponseEntity<Object> delete(@PathVariable Long userId, int socialLoginType) {
         System.out.println("userId : " + userId + ", socialLoginType : " + socialLoginType);
+
+        HashMap<String, Object> hashMap = new HashMap<>();
         //카카오 유저 탈퇴
         if (socialLoginType == 1) {
             //카카오 로그아웃
             try {
                 String accessToken = kakaoAuthService.refreshToken(userId);
                 kakaoAuthService.kakaoUnlink(accessToken);
-                //kakaoAuthService.kakaoLogout(accessToken);
-                UserResponse.OnlyId response = userService.delete(userId);
-                return ResponseEntity.ok().body(response);
+                userService.delete(userId);
+                hashMap.put("deleteUser", true);
+                return ResponseEntity.ok().body(hashMap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return ResponseEntity.internalServerError().build();
+        hashMap.put("deleteUser", false);
+        return ResponseEntity.internalServerError().body(hashMap);
     }
 
     @ApiOperation(value = "리다이랙트 url", notes = "구글 로그인 시 url 뒤에 파라미터로 이메일을 넘김")

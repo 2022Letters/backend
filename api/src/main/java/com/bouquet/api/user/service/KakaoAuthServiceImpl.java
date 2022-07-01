@@ -127,9 +127,6 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
-//        conn.setRequestProperty("grant_type", "refresh_token");
-//        conn.setRequestProperty("client_id", "644f22ddf456df96ce3ac3e3b870991a");
-//        conn.setRequestProperty("refresh_token", refreshToken);
 
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
         StringBuilder sb = new StringBuilder();
