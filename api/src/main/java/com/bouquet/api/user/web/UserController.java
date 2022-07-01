@@ -38,7 +38,7 @@ public class UserController {
     private UserRepository userRepository;
 
     //프론트에서 인증 코드를 보내주면 카카오 서버와 통신하고 사용자 정보를 조회한다.
-    @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환")
+    @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, socialLoginType 값 1, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0, email 반환")
     @GetMapping("kakaoLogin")
     public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
         System.out.println(code);
@@ -83,7 +83,7 @@ public class UserController {
     }
 
 
-    @ApiOperation(value = "닉네임 입력", notes = "nickname 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
+    @ApiOperation(value = "닉네임 입력", notes = "nickname, email 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
     @PostMapping(value = "/login/user/nickname")
     public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user){
         HttpStatus status = null;
@@ -94,7 +94,7 @@ public class UserController {
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
 
-    @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "기존 회원은 existingUser 값 true, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false로 반환 ")
+    @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "email 값을 입력받아 기존 회원은 existingUser 값 true, socialLoginType 값 0, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0으로 반환 ")
     @GetMapping(value = "/login/sucess")
     public ResponseEntity<Map<String, Object>> loginComplete(HttpSession httpSession, String email) {
 //
@@ -126,8 +126,8 @@ public class UserController {
         UserResponse.OnlyId response = userService.delete(userId);
         return ResponseEntity.ok().body(response);
     }
-
-    @GetMapping(value = "/login/email") // 구글 로그인 시 프론트로 이메일 넘겨줌 , 리다이렉트 url 함수
+    @ApiOperation(value = "리다이랙트 url", notes = "구글 로그인 시 url 뒤에 파라미터로 이메일을 넘김")
+    @GetMapping(value = "/login/email")
     public void oauthLogin(HttpServletResponse response, HttpSession httpSession) throws IOException {
         User user = (User)httpSession.getAttribute("user");
         String redirect_uri="http://localhost:3000/login/redirect";
@@ -136,3 +136,4 @@ public class UserController {
 
 
 }
+
