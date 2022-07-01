@@ -28,7 +28,7 @@ public class SecurityConfig extends org.springframework.security.config.annotati
 
                 .and()
                 .logout()
-                .logoutSuccessUrl("/") //
+                .logoutSuccessUrl("http://localhost:3000/") //
 
                 .and()
                 .oauth2Login()
