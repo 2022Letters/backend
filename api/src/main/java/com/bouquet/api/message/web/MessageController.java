@@ -3,7 +3,6 @@ package com.bouquet.api.message.web;
 import com.bouquet.api.message.dto.MessageRequest;
 import com.bouquet.api.message.dto.MessageResponse;
 import com.bouquet.api.message.service.MessageService;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
