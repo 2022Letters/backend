@@ -34,10 +34,10 @@ public class Message {
     private String content;
 
     @Column
-    private int x;
+    private Double x;
 
     @Column
-    private int y;
+    private Double y;
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;

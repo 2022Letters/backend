@@ -12,7 +12,7 @@ public class MessageRequest {
         private int iconId;
         private String nickname;
         private String content;
-        private int x;
-        private int y;
+        private Double x;
+        private Double y;
     }
 }
