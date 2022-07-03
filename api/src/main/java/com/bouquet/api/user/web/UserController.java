@@ -139,7 +139,16 @@ public class UserController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            try {
+                userService.delete(userId);
+                hashMap.put("deleteUser", true);
+                return ResponseEntity.ok().body(hashMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
         hashMap.put("deleteUser", false);
         return ResponseEntity.internalServerError().body(hashMap);
     }
