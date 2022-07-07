@@ -1,9 +1,9 @@
 package com.bouquet.api.user.web;
 
 
+import com.bouquet.api.config.NoAuth;
 import com.bouquet.api.user.dto.*;
 import com.bouquet.api.user.repository.UserRepository;
-import com.bouquet.api.user.service.CustomOAuth2UserService;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
 import com.bouquet.api.util.JWTUtil;
@@ -38,6 +38,7 @@ public class UserController {
     private UserRepository userRepository;
 
     //프론트에서 인증 코드를 보내주면 카카오 서버와 통신하고 사용자 정보를 조회한다.
+    @NoAuth
     @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, socialLoginType 값 1, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0, email 반환")
     @GetMapping("kakaoLogin")
     public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
@@ -83,7 +84,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-
+    @NoAuth
     @ApiOperation(value = "닉네임 입력", notes = "nickname, email 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
     @PostMapping(value = "/login/user/nickname")
     public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user) {
@@ -95,7 +96,7 @@ public class UserController {
         else status = status = HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
-
+    @NoAuth
     @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "email 값을 입력받아 기존 회원은 existingUser 값 true, socialLoginType 값 0, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0으로 반환 ")
     @GetMapping(value = "/login/sucess")
     public ResponseEntity<Map<String, Object>> loginComplete(HttpSession httpSession, String email) {
@@ -152,7 +153,7 @@ public class UserController {
         hashMap.put("deleteUser", false);
         return ResponseEntity.internalServerError().body(hashMap);
     }
-
+    @NoAuth
     @ApiOperation(value = "리다이랙트 url", notes = "구글 로그인 시 url 뒤에 파라미터로 이메일을 넘김")
     @GetMapping(value = "/login/email")
     public void oauthLogin(HttpServletResponse response, HttpSession httpSession) throws IOException {
