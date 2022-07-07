@@ -22,7 +22,6 @@ public class MessageService {
         Message savedMessage = messageRepository.save(message);
         return MessageResponse.OnlyId.build(savedMessage);
     }
-    // TODO: 로그인한 사용자만 가능하도록 수정 필요
     public MessageResponse.GetMessage getMessage(Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
         return MessageResponse.GetMessage.build(message);

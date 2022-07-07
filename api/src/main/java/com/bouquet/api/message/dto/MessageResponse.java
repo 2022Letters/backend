@@ -2,7 +2,7 @@ package com.bouquet.api.message.dto;
 
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public class MessageResponse {
     @Getter
@@ -30,7 +30,7 @@ public class MessageResponse {
         private String content;
         private Double x;
         private Double y;
-        private Timestamp createdAt;
+        private LocalDate createdAt;
 
         public static MessageResponse.GetMessage build(Message message) {
             return GetMessage.builder()
