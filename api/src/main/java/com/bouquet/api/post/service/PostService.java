@@ -56,7 +56,6 @@ public class PostService {
     @Transactional
     public PostResponse.OnlyId update(Long id, PostRequest.Create request) {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        // TODO: 유저 확인 필요 if(request.getUserId() != post.getUserId()) 유저 다르다는 오류
         post.setDate(request.getDate());
         post.setTitle(request.getTitle());
         post.setVisibility(request.isVisibility());
@@ -68,7 +67,6 @@ public class PostService {
     @Transactional
     public PostResponse.OnlyId delete(Long id) {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        // TODO: 유저 확인 필요 if(request.getUserId() != post.getUserId()) 유저 다르다는 오류
         postRepository.deleteById(id);
         return PostResponse.OnlyId.build(post);
     }

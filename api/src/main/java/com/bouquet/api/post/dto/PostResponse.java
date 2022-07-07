@@ -4,7 +4,6 @@ import com.bouquet.api.message.dto.Message;
 import com.bouquet.api.message.dto.MessageResponse;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class PostResponse {
         private String title;
         private boolean visibility;
         private LocalDate date;
-        private Timestamp createdAt;
+        private LocalDate createdAt;
         private int count;
         private List<MessageResponse.GetMessageInfo> messages;
 

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -37,8 +37,8 @@ public class Post {
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate date;
 
-    @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "created_at", updatable = false, insertable = false)
+    private LocalDate createdAt;
 
     public static Post create(PostRequest.Create request, User user) {
         return Post.builder()

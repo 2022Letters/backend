@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -39,8 +39,8 @@ public class Message {
     @Column
     private Double y;
 
-    @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "created_at", updatable = false, insertable = false)
+    private LocalDate createdAt;
 
     public static Message create(MessageRequest.Create request, Post post) {
         return Message.builder()
