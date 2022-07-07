@@ -1,5 +1,6 @@
 package com.bouquet.api.post.web;
 
+import com.bouquet.api.config.NoAuth;
 import com.bouquet.api.post.dto.PostRequest;
 import com.bouquet.api.post.dto.PostResponse;
 import com.bouquet.api.post.service.PostService;
@@ -26,6 +27,7 @@ public class PostController {
         return ResponseEntity.created(URI.create("/api/post/" + response.getId())).body(response);
     }
 
+    @NoAuth
     @ApiOperation(value = "게시글 상세 조회", notes = "postId : 게시글 식별자를 주소에 작성하여 게시글 하나 조회")
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse.GetPost> getPost(@PathVariable Long postId) {

@@ -1,5 +1,6 @@
 package com.bouquet.api.message.web;
 
+import com.bouquet.api.config.NoAuth;
 import com.bouquet.api.message.dto.MessageRequest;
 import com.bouquet.api.message.dto.MessageResponse;
 import com.bouquet.api.message.service.MessageService;
@@ -17,6 +18,7 @@ import java.net.URI;
 public class MessageController {
     private final MessageService messageService;
 
+    @NoAuth
     @ApiOperation(value = "메시지 생성", notes = "{postId : 게시글 식별자, iconId : 아이콘 식별자, nickname : 메시지 작성자 닉네임, content : 내용, x : x좌표, y : y좌표 } 를 전달하면, 생성된 메시지의 식별자를 반환합니다.")
     @PostMapping("/msg")
     @ResponseStatus(HttpStatus.CREATED)
@@ -25,6 +27,7 @@ public class MessageController {
         return ResponseEntity.created(URI.create("/api/msg/" + response.getId())).body(response);
     }
 
+    @NoAuth
     @ApiOperation(value = "메시지 상세 조회", notes = "msgId : 메시지 식별자 를 전달하면, 메시지 상세 정보가 반환됩니다.")
     @GetMapping("/msg/{msgId}")
     public ResponseEntity<MessageResponse.GetMessage> getMessage(@PathVariable Long msgId) {
