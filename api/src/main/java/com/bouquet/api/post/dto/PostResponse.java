@@ -28,6 +28,30 @@ public class PostResponse {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetPostSet {
+        private Long id;
+        private int categoryId;
+        private String title;
+        private boolean visibility;
+        private LocalDate date;
+        private LocalDate createdAt;
+
+        public static PostResponse.GetPostSet build(Post post) {
+            return GetPostSet.builder()
+                    .id(post.getId())
+                    .categoryId(post.getCategoryId())
+                    .title(post.getTitle())
+                    .visibility(post.isVisibility())
+                    .date(post.getDate())
+                    .createdAt(post.getCreatedAt())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class GetPost {
         private Long id;
         private int categoryId;

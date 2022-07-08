@@ -28,6 +28,14 @@ public class PostController {
     }
 
     @NoAuth
+    @ApiOperation(value = "게시글 설정 조회", notes = "postId : 게시글 식별자를 주소에 작성하여 메시지 없이 게시글만 하나 조회")
+    @GetMapping("/post/set/{postId}")
+    public ResponseEntity<PostResponse.GetPostSet> getPostSet(@PathVariable Long postId) {
+        PostResponse.GetPostSet response = postService.getPostSet(postId);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @NoAuth
     @ApiOperation(value = "게시글 상세 조회", notes = "postId : 게시글 식별자를 주소에 작성하여 게시글 하나 조회")
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse.GetPost> getPost(@PathVariable Long postId) {
