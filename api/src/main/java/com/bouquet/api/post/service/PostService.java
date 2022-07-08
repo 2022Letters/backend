@@ -33,6 +33,11 @@ public class PostService {
         return PostResponse.OnlyId.build(savedPost);
     }
 
+    public PostResponse.GetPostSet getPostSet(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        return PostResponse.GetPostSet.build(post);
+    }
+
     public PostResponse.GetPost getPost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         int count = messageRepository.countAllByPost(post);
