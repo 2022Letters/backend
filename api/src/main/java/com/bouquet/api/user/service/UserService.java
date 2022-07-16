@@ -28,8 +28,6 @@ public class UserService {
 
     public HashMap<String, Object> create(User user) {
         HashMap<String, Object> result = new HashMap<>();
-        User sessionUser = (User) httpSession.getAttribute("user");
-        user.setRefreshToken(sessionUser.getRefreshToken());
         User savedUser = userRepository.save(user);
         UserResponse.UserInfo response = UserResponse.UserInfo.build(savedUser);
         result.put("user", response);
