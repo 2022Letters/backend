@@ -119,7 +119,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
         String reqUrl = "https://kauth.kakao.com/oauth/token";
 
-        String refreshToken = userRepository.findById(userId).get().getRefreshToken();
+        String refreshToken = userRepository.findById(userId).get().getKakaoRefreshToken();
         System.out.println(refreshToken);
 
         URL url = new URL(reqUrl);

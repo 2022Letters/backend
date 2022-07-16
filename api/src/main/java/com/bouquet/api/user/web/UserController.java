@@ -69,13 +69,10 @@ public class UserController {
             }
             //가입 안했으면
             else {
-                User user = new User();
-                user.setEmail(kakaoUserInfo.getEmail());
-                user.setRefreshToken(kakaoTokenInfo.getRefreshToken());
-                httpSession.setAttribute("user", user);
                 hashMap.put("existingUser", "false");
                 hashMap.put("socialLoginType", 1);
-                hashMap.put("email", user.getEmail());
+                hashMap.put("email", kakaoUserInfo.getEmail());
+                hashMap.put("kakaoRefreshToken", kakaoTokenInfo.getRefreshToken());
                 return ResponseEntity.status(HttpStatus.OK).body(hashMap);
             }
         } catch (Exception e) {

@@ -25,7 +25,7 @@ public class User {
     private String nickname;
 
     @Column(length = 255)
-    private String refreshToken;
+    private String kakaoRefreshToken;
 
     public User update(String nickname) {
         this.nickname = nickname;
@@ -36,7 +36,7 @@ public class User {
         return User.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .refreshToken(user.getRefreshToken())
+                .kakaoRefreshToken(user.getKakaoRefreshToken())
                 .build();
     }
 
