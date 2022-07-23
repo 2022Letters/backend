@@ -14,14 +14,4 @@ import java.util.Map;
 @AllArgsConstructor
 public class KakaoUserInfo {
     long id;
-    //String name;
-    String email;
-    String birthday;
-
-    @JsonProperty("kakao_account")
-    private void nested(Map<String, Object> kakaoAccount) {
-        //name = ((Map<String, String>) kakaoAccount.get("profile")).get("nickname");
-        email = (String) kakaoAccount.get("email");
-        birthday = (String) kakaoAccount.get("birthday");
-    }
 }

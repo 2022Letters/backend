@@ -36,6 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### DB info ###
+**/src/main/resources/application.properties
+
 ### google client ###
 **/src/main/resources/application-oauth.properties
 
