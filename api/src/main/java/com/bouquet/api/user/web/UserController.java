@@ -39,7 +39,7 @@ public class UserController {
 
     //프론트에서 인증 코드를 보내주면 카카오 서버와 통신하고 사용자 정보를 조회한다.
     @NoAuth
-    @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, socialLoginType 값 1, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 1, socialId, refreshToken 반환")
+    @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, socialLoginType 값 1, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0, email 반환")
     @GetMapping("kakaoLogin")
     public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
         System.out.println(code);
@@ -47,7 +47,7 @@ public class UserController {
         try {
             KakaoTokenInfo kakaoTokenInfo = kakaoAuthService.sendCode(code);
             KakaoUserInfo kakaoUserInfo = kakaoAuthService.sendToken(kakaoTokenInfo.getAccessToken());
-            User userInfo = kakaoAuthService.socialIdCheck(Long.toString(kakaoUserInfo.getId()));
+            User userInfo = kakaoAuthService.emailCheck(kakaoUserInfo.getEmail());
 
 
             HashMap<String, Object> hashMap = new HashMap<>();
@@ -58,7 +58,7 @@ public class UserController {
                 hashMap.put("socialLoginType", 1);
                 hashMap.put("existingUser", "true");
                 try {
-                    hashMap.put("accessToken", jwtUtil.createToken("id", Long.toString(userInfo.getId())));
+                    hashMap.put("accessToken", jwtUtil.createToken("email", userInfo.getEmail()));
                     hashMap.put("message", SUCCESS);
                     status = HttpStatus.ACCEPTED;
                 } catch (Exception e) {
@@ -71,8 +71,8 @@ public class UserController {
             else {
                 hashMap.put("existingUser", "false");
                 hashMap.put("socialLoginType", 1);
-                hashMap.put("socialId", kakaoUserInfo.getId());
-                hashMap.put("refreshToken", kakaoTokenInfo.getRefreshToken());
+                hashMap.put("email", kakaoUserInfo.getEmail());
+                hashMap.put("kakaoRefreshToken", kakaoTokenInfo.getRefreshToken());
                 return ResponseEntity.status(HttpStatus.OK).body(hashMap);
             }
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @NoAuth
-    @ApiOperation(value = "닉네임 입력", notes = "nickname, socialId, refreshToken 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
+    @ApiOperation(value = "닉네임 입력", notes = "nickname, email 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
     @PostMapping(value = "/login/user/nickname")
     public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user) {
         System.out.println(user.toString());
@@ -90,32 +90,32 @@ public class UserController {
         HashMap<String, Object> result = userService.create(user);
         if (result.get("message").equals("success"))
             status = HttpStatus.ACCEPTED;
-        else
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        else status = status = HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
-
     @NoAuth
-    @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "socialId 값을 입력받아 기존 회원은 existingUser 값 true, socialLoginType 값 0, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0, socialId 반환 ")
+    @ApiOperation(value = "구글 로그인 후 유저 정보 반환", notes = "email 값을 입력받아 기존 회원은 existingUser 값 true, socialLoginType 값 0, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 0으로 반환 ")
     @GetMapping(value = "/login/sucess")
-    public ResponseEntity<Map<String, Object>> loginComplete(HttpSession httpSession, String socialId) {
+    public ResponseEntity<Map<String, Object>> loginComplete(HttpSession httpSession, String email) {
+//
         HttpStatus status = null;
         User user = new User();
-//        if (userRepository.existsByEmail(email) != null) {
-//            user = userRepository.existsByEmail(email);
-//        } else {
-//            user.setEmail(email);
-//        }
-//
-//        httpSession.setAttribute("user", user);
+        if (userRepository.existsByEmail(email) != null) {
+            user = userRepository.existsByEmail(email);
+        } else {
+            user.setEmail(email);
+        }
+        System.out.println(email + "이메일");
+        System.out.println(user + "찾은유저정보");
+        httpSession.setAttribute("user", user);
         HashMap<String, Object> result = userService.checknick(user);
-//        if (result.get("existingUser").equals("false")) {
-//            result.put("email", email);
-//            status = HttpStatus.ACCEPTED;
-//        } else if (result.get("existingUser").equals("true") && result.get("message").equals("success")) {
-//            status = HttpStatus.ACCEPTED;
-//        } else status = HttpStatus.INTERNAL_SERVER_ERROR;
-//        result.put("socialLoginType", 0);
+        if (result.get("existingUser").equals("false")) {
+            result.put("email", email);
+            status = HttpStatus.ACCEPTED;
+        } else if (result.get("existingUser").equals("true") && result.get("message").equals("success")) {
+            status = HttpStatus.ACCEPTED;
+        } else status = HttpStatus.INTERNAL_SERVER_ERROR;
+        result.put("socialLoginType", 0);
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
 
@@ -150,14 +150,15 @@ public class UserController {
         hashMap.put("deleteUser", false);
         return ResponseEntity.internalServerError().body(hashMap);
     }
-
     @NoAuth
     @ApiOperation(value = "리다이랙트 url", notes = "구글 로그인 시 url 뒤에 파라미터로 이메일을 넘김")
     @GetMapping(value = "/login/email")
     public void oauthLogin(HttpServletResponse response, HttpSession httpSession) throws IOException {
-//        User user = (User) httpSession.getAttribute("user");
-//        String redirect_uri = "http://localhost:3000/login/redirect";
-//        response.sendRedirect(redirect_uri + "?email=" + user.getEmail());
+        User user = (User) httpSession.getAttribute("user");
+        String redirect_uri = "http://localhost:3000/login/redirect";
+        response.sendRedirect(redirect_uri + "?email=" + user.getEmail());
     }
+
+
 }
 

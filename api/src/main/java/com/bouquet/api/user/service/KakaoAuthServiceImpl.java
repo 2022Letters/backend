@@ -100,16 +100,16 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
         return kakaoUserInfo;
     }
 
-    //사용자 소셜id가 DB에 존재하는지 조회해서 회원가입 여부 판단. 존재하면 유저 정보, 존재하지 않으면 null 반환
+    //사용자 이메일이 DB에 존재하는지 조회해서 회원가입 여부 판단. 존재하면 유저 정보, 존재하지 않으면 null 반환
     @Override
-    public User socialIdCheck(String socialId) {
-        User user = userRepository.findByKakaoSocialId(socialId);
-        if (user != null) {
-            System.out.println("가입된 회원이 존재합니다.");
+    public User emailCheck(String email) {
+        User userNickname = userRepository.existsByEmail(email);
+        if (userNickname != null) {
+            System.out.println("이메일이 존재합니다.");
         } else {
-            System.out.println("가입된 회원이 존재하지 않습니다.");
+            System.out.println("이메일이 존재하지 않습니다.");
         }
-        return user;
+        return userNickname;
     }
 
     //유저 아이디를 받아 토큰을 갱신하고 액세스 토큰 반환
@@ -119,7 +119,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
         String reqUrl = "https://kauth.kakao.com/oauth/token";
 
-        String refreshToken = userRepository.findById(userId).get().getRefreshToken();
+        String refreshToken = userRepository.findById(userId).get().getKakaoRefreshToken();
         System.out.println(refreshToken);
 
         URL url = new URL(reqUrl);
