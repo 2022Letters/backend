@@ -11,11 +11,12 @@ public class UserResponse {
     public static class UserInfo {
         private Long id;
         private String nickname;
+        private String email;
         public static UserInfo build(User user) {
             return UserInfo.builder()
                     .id(user.getId())
                     .nickname(user.getNickname())
-                    .build();
+                    .email(user.getEmail()).build();
         }
     }
 

@@ -32,7 +32,7 @@ public class UserService {
         UserResponse.UserInfo response = UserResponse.UserInfo.build(savedUser);
         result.put("user", response);
         try {
-            result.put("accessToken", jwtUtil.createToken("id", Long.toString(user.getId())));
+            result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
             result.put("message", SUCCESS);
         } catch (Exception e) {
             result.put("message", FAIL);
@@ -49,7 +49,7 @@ public class UserService {
             result.put("existingUser", "true");
             result.put("user", response);
             try {
-                result.put("accessToken", jwtUtil.createToken("id", Long.toString(user.getId())));
+                result.put("accessToken", jwtUtil.createToken("email", user.getEmail()));
                 result.put("message", SUCCESS);
             } catch (Exception e) {
                 result.put("message", FAIL);

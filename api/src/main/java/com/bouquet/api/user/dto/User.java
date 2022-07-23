@@ -19,16 +19,13 @@ public class User {
     private long id;
 
     @Column(length = 100, nullable = false)
+    private String email;
+
+    @Column(length = 100, nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
-    private int socialLoginType;
-
-    @Column(length = 255, nullable = false)
-    private String socialId;
-
     @Column(length = 255)
-    private String refreshToken;
+    private String kakaoRefreshToken;
 
     public User update(String nickname) {
         this.nickname = nickname;
@@ -38,9 +35,8 @@ public class User {
     public static User create(User user) {
         return User.builder()
                 .nickname(user.getNickname())
-                .socialLoginType(user.getSocialLoginType())
-                .socialId(user.getSocialId())
-                .refreshToken(user.getRefreshToken())
+                .email(user.getEmail())
+                .kakaoRefreshToken(user.getKakaoRefreshToken())
                 .build();
     }
 

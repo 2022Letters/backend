@@ -59,7 +59,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User findUser(OAuthAttributes attributes) {
-        User user = null;//userRepository.findByEmail(attributes.getEmail()).orElse(attributes.toEntity());
+        User user = userRepository.findByEmail(attributes.getEmail()).orElse(attributes.toEntity());
 
         return user;
     }

@@ -8,6 +8,7 @@ public class UserRequest {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Create {
+        private String email;
         private String nickname;
     }
 }
