@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/oauth2/authorization/google", "/login/**" , "/logout");
+                .excludePathPatterns("/oauth2/authorization/google", "/login/**" , "/logout", "/retoken");
 
 
     }
