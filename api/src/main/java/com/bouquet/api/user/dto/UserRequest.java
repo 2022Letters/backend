@@ -10,4 +10,16 @@ public class UserRequest {
     public static class Create {
         private String nickname;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetUser {
+        private String nickname;
+        private int socialLoginType;
+        private String socialId;
+        private String refreshToken;
+
+    }
 }

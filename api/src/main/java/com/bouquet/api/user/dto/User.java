@@ -35,7 +35,7 @@ public class User {
         return this;
     }
 
-    public static User create(User user) {
+    public static User create(UserRequest.GetUser user) {
         return User.builder()
                 .nickname(user.getNickname())
                 .socialLoginType(user.getSocialLoginType())
