@@ -1,10 +1,7 @@
 package com.bouquet.api.user.service;
 
 
-import com.bouquet.api.user.dto.TokenRequest;
-import com.bouquet.api.user.dto.TokenResponse;
-import com.bouquet.api.user.dto.User;
-import com.bouquet.api.user.dto.UserResponse;
+import com.bouquet.api.user.dto.*;
 import com.bouquet.api.user.exception.NotValidateAccessToken;
 import com.bouquet.api.user.exception.NotValidateRefreshToken;
 import com.bouquet.api.user.exception.UserNotFoundException;
@@ -23,19 +20,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
 
-    @Autowired
-    private RedisUtil redisUtil;
+
+    private final RedisUtil redisUtil;
 
     private final UserRepository userRepository;
 
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
-    public HashMap<String, Object> create(User user) {
+    public HashMap<String, Object> create(UserRequest.GetUser request) {
         HashMap<String, Object> result = new HashMap<>();
+        User user = User.create(request);
         User savedUser = userRepository.save(user);
         UserResponse.UserInfo response = UserResponse.UserInfo.build(savedUser);
         result.put("user", response);
@@ -44,24 +41,6 @@ public class UserService {
             result.put("message", SUCCESS);
         } catch (Exception e) {
             result.put("message", FAIL);
-        }
-        return result;
-    }
-
-    public HashMap<String, Object> checknick(User user) {
-        HashMap<String, Object> result = new HashMap<>();
-        if (user.getNickname() == null) {
-            result.put("existingUser", "false");
-        } else {
-            UserResponse.UserInfo response = UserResponse.UserInfo.build(user);
-            result.put("existingUser", "true");
-            result.put("user", response);
-            try {
-                result.put("accessToken", jwtUtil.createToken(Long.toString(response.getId())));
-                result.put("message", SUCCESS);
-            } catch (Exception e) {
-                result.put("message", FAIL);
-            }
         }
         return result;
     }
@@ -86,8 +65,7 @@ public class UserService {
             throw new NotValidateAccessToken();
         }
         String savedRefreshtoken = redisUtil.getData(Long.toString(user.get().getId()));
-        System.out.println("redis에 저장되어있는 refreshToken : " + savedRefreshtoken);
-        System.out.println("받은 refreshTokeb : "+refreshToken);
+
         if(savedRefreshtoken==null || !savedRefreshtoken.equals(refreshToken)){
             throw new NotValidateRefreshToken();
         }
@@ -97,7 +75,6 @@ public class UserService {
 
     public Optional<User> findUserByToken(String accessToken) throws NotValidateAccessToken {
         String userId = jwtUtil.getUserId(accessToken);
-        System.out.println(userId+" access토큰으로 찾은 userId");
         return userRepository.findById(Long.parseLong(userId));
     }
 
