@@ -2,6 +2,7 @@ package com.bouquet.api.interceptor;
 
 
 import com.bouquet.api.config.NoAuth;
+import com.bouquet.api.user.exception.NotValidateAccessToken;
 import com.bouquet.api.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,17 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class JWTInterceptor implements HandlerInterceptor {
     private static final String HEADER_AUTH = "accessToken";
-
-
     @Autowired
     private JWTUtil jwtUtil;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-
-        System.out.println(request.getRequestURL()+"url확인용");
-        System.out.println(request.getRequestURI()+"uri확인용");
 
         boolean check=checkAnnotation(handler, NoAuth.class);
         if(check) return true;
@@ -36,8 +32,11 @@ public class JWTInterceptor implements HandlerInterceptor {
         final String token = request.getHeader(HEADER_AUTH);
         System.out.println("token : " + token);
         if(token != null){
-            jwtUtil.valid(token);
-            return true;
+            if(jwtUtil.validateTokenExpiration(token)){
+                return true;
+            }else{
+                throw new NotValidateAccessToken();
+            }
         }
         throw new Exception("유효하지 않은 접근입니다.");
     }

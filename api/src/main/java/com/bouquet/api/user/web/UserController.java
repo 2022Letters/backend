@@ -3,6 +3,8 @@ package com.bouquet.api.user.web;
 
 import com.bouquet.api.config.NoAuth;
 import com.bouquet.api.user.dto.*;
+import com.bouquet.api.user.exception.NotValidateAccessToken;
+import com.bouquet.api.user.exception.NotValidateRefreshToken;
 import com.bouquet.api.user.repository.UserRepository;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
@@ -41,7 +43,7 @@ public class UserController {
     @NoAuth
     @ApiOperation(value = "카카오 로그인", notes = "code 값을 입력하여 로그인 후 기존 회원은 existingUser 값 true, socialLoginType 값 1, jwt, user 정보 반환, 미가입 회원일 경우 existingUser 값 false, socialLoginType 값 1, socialId, refreshToken 반환")
     @GetMapping("kakaoLogin")
-    public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession) {
+    public ResponseEntity<Object> kakaoLogin(String code, @ApiIgnore HttpSession httpSession, HttpServletResponse res) {
         System.out.println(code);
         HttpStatus status = null;
         try {
@@ -58,13 +60,16 @@ public class UserController {
                 hashMap.put("socialLoginType", 1);
                 hashMap.put("existingUser", "true");
                 try {
-                    hashMap.put("accessToken", jwtUtil.createToken("id", Long.toString(userInfo.getId())));
+                    hashMap.put("accessToken", jwtUtil.createToken(Long.toString(response.getId())));
                     hashMap.put("message", SUCCESS);
                     status = HttpStatus.ACCEPTED;
                 } catch (Exception e) {
                     hashMap.put("message", FAIL);
                     status = HttpStatus.INTERNAL_SERVER_ERROR;
                 }
+                // jwt refresh 토큰 생성 후 쿠키로 전달
+                String refreshToken = userService.refreshToken(response.getId());
+                res.addHeader("Set-Cookie", "refreshToken="+refreshToken+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
                 return ResponseEntity.status(status).body(hashMap);
             }
             //가입 안했으면
@@ -84,7 +89,7 @@ public class UserController {
     @NoAuth
     @ApiOperation(value = "닉네임 입력", notes = "nickname, socialId, refreshToken 값을 입력받아 유저 생성 후 jwt와 user 정보 반환")
     @PostMapping(value = "/login/user/nickname")
-    public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> getUser(@RequestBody User user, HttpServletResponse res) {
         System.out.println(user.toString());
         HttpStatus status = null;
         HashMap<String, Object> result = userService.create(user);
@@ -92,6 +97,10 @@ public class UserController {
             status = HttpStatus.ACCEPTED;
         else
             status = HttpStatus.INTERNAL_SERVER_ERROR;
+        // jwt refresh 토큰 생성 후 쿠키로 전달
+        UserResponse.UserInfo response = (UserResponse.UserInfo) result.get("user");
+        String refreshToken = userService.refreshToken(response.getId());
+        res.addHeader("Set-Cookie", "refreshToken="+refreshToken+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
         return new ResponseEntity<Map<String, Object>>(result, status);
     }
 
@@ -158,6 +167,14 @@ public class UserController {
 //        User user = (User) httpSession.getAttribute("user");
 //        String redirect_uri = "http://localhost:3000/login/redirect";
 //        response.sendRedirect(redirect_uri + "?email=" + user.getEmail());
+    }
+
+    @PostMapping("/retoken")
+    public ResponseEntity<TokenResponse.NewToken> reIssue(@RequestBody TokenRequest.Create request, HttpServletResponse res, @CookieValue(name="refreshToken") String refresh) throws NotValidateAccessToken, NotValidateRefreshToken {
+        TokenResponse.NewToken response = userService.getNewToken(request, refresh);
+        String refreshToken = userService.refreshToken(response.getUserId());
+        res.addHeader("Set-Cookie", "refreshToken="+refreshToken+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
+        return ResponseEntity.ok().body(response);
     }
 }
 
