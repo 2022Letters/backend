@@ -5,22 +5,17 @@ import com.bouquet.api.config.NoAuth;
 import com.bouquet.api.user.dto.*;
 import com.bouquet.api.user.exception.NotValidateAccessToken;
 import com.bouquet.api.user.exception.NotValidateRefreshToken;
-import com.bouquet.api.user.repository.UserRepository;
 import com.bouquet.api.user.service.GoogleAuthService;
 import com.bouquet.api.user.service.KakaoAuthService;
 import com.bouquet.api.user.service.UserService;
 import com.bouquet.api.util.JWTUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +56,7 @@ public class UserController {
                 hashMap.put("socialLoginType", 1);
                 hashMap.put("existingUser", "true");
                 try {
+                    // jwt accessToken 생성 후 HashMap에 담아서 전달
                     hashMap.put("accessToken", jwtUtil.createToken(Long.toString(response.getId())));
                     hashMap.put("message", SUCCESS);
                     status = HttpStatus.ACCEPTED;
@@ -68,7 +64,7 @@ public class UserController {
                     hashMap.put("message", FAIL);
                     status = HttpStatus.INTERNAL_SERVER_ERROR;
                 }
-                // jwt refresh 토큰 생성 후 쿠키로 전달
+                // jwt refrestToken 생성 후 쿠키로 전달 (유효기간 7일)
                 String refreshToken = userService.refreshToken(response.getId());
                 res.addHeader("Set-Cookie", "refreshToken="+refreshToken+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
                 return ResponseEntity.status(status).body(hashMap);
@@ -107,6 +103,7 @@ public class UserController {
                 hashMap.put("socialLoginType", 0);
                 hashMap.put("existingUser", "true");
                 try {
+                    // jwt accessToken 생성 후 HashMap에 담아서 전달
                     hashMap.put("accessToken", jwtUtil.createToken(Long.toString(response.getId())));
                     hashMap.put("message", SUCCESS);
                     status = HttpStatus.ACCEPTED;
@@ -146,6 +143,7 @@ public class UserController {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         // jwt refresh 토큰 생성 후 쿠키로 전달
         UserResponse.UserInfo response = (UserResponse.UserInfo) result.get("user");
+        // jwt refresh 토큰 생성 후 쿠키로 전달
         String refreshToken = userService.refreshToken(response.getId());
         res.addHeader("Set-Cookie", "refreshToken="+refreshToken+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
         return new ResponseEntity<Map<String, Object>>(result, status);
@@ -186,8 +184,7 @@ public class UserController {
         return ResponseEntity.internalServerError().body(hashMap);
     }
 
-
-
+    @ApiOperation(value = "토큰 재발급", notes = "accessToken은 body로 refrestToken은 쿠키로 전달받아 토큰 유효성 확인 후 jwt 토큰 재발급")
     @PostMapping("/retoken")
     public ResponseEntity<TokenResponse.NewToken> reIssue(@RequestBody TokenRequest.Create request, HttpServletResponse res, @CookieValue(name="refreshToken") String refresh) throws NotValidateAccessToken, NotValidateRefreshToken {
         TokenResponse.NewToken response = userService.getNewToken(request, refresh);
